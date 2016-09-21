@@ -22,6 +22,9 @@ type Item struct {
 type Action struct {
 	Causes               []Cause               `json:"causes"`
 	ParameterDefinitions []ParameterDefinition `json:"parameterDefinitions"`
+	Parameters           []Parameter           `json:"parameters"`
+	LastBuiltRevision    Revision              `json:"lastBuiltRevision`
+	RemoteUrls           []string              `json:"remoteUrls"`
 }
 
 type Cause struct {
@@ -32,6 +35,22 @@ type Cause struct {
 }
 
 type ParameterDefinition struct {
+	Name string `json:"name"`
+}
+
+type Parameter struct {
+	Class string `json:"_class"`
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
+type Revision struct {
+	SHA1   string `json:"SHA1"`
+	Branch []Branch `json:"branch"`
+}
+
+type Branch struct {
+	SHA1 string `json:"SHA1"`
 	Name string `json:"name"`
 }
 
