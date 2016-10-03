@@ -46,7 +46,7 @@ type Parameter struct {
 
 type Revision struct {
 	SHA1   string `json:"SHA1"`
-	Branch []Branch `json:"branch"`
+	Branches []Branch `json:"branch"`
 }
 
 type Branch struct {

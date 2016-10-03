@@ -10,6 +10,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"time"
 )
 
 type Auth struct {
@@ -21,6 +22,10 @@ type Jenkins struct {
 	auth    *Auth
 	baseUrl string
 }
+
+const (
+	httpTimeoutRequestSeconds = 30
+)
 
 func NewJenkins(auth *Auth, baseUrl string) *Jenkins {
 	return &Jenkins{
@@ -45,7 +50,13 @@ func (jenkins *Jenkins) sendRequest(req *http.Request) (*http.Response, error) {
 	if jenkins.auth != nil {
 		req.SetBasicAuth(jenkins.auth.Username, jenkins.auth.ApiToken)
 	}
-	return http.DefaultClient.Do(req)
+	
+	timeout := time.Duration(httpTimeoutRequestSeconds * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	
+	return client.Do(req)
 }
 
 func (jenkins *Jenkins) parseXmlResponse(resp *http.Response, body interface{}) (err error) {
@@ -170,6 +181,33 @@ func (jenkins *Jenkins) GetJobConfig(name string) (job MavenJobItem, err error) 
 // GetBuild returns a number-th build result of specified job.
 func (jenkins *Jenkins) GetBuild(job Job, number int) (build Build, err error) {
 	err = jenkins.get(fmt.Sprintf("/job/%s/%d", job.Name, number), nil, &build)
+	return
+}
+
+// GetBuildInfo returns some limited information about the build, to keep queries very quick
+func (jenkins *Jenkins) GetBuildInfo(job Job, number int) (build Build, err error) {
+	params := url.Values{}
+	params.Set("tree", "building,description,displayName,duration,fullDisplayName,id,number,url")
+	
+	err = jenkins.get(fmt.Sprintf("/job/%s/%d", job.Name, number), params, &build)
+	return
+}
+
+// GetBuildParameters returns the name/value pairs of the build parameters for the a particular build
+func (jenkins *Jenkins) GetBuildParameters(job Job, number int) (build Build, err error) {
+	params := url.Values{}
+	params.Set("tree", "actions[parameters[name,value]]")
+	
+	err = jenkins.get(fmt.Sprintf("/job/%s/%d", job.Name, number), params, &build)
+	return
+}
+
+// GetBuildCommitInformation gets the build commit information for this build
+func (jenkins *Jenkins) GetBuildCommitInformation(job Job, number int) (build Build, err error) {
+	params := url.Values{}
+	params.Set("tree", "actions[lastBuiltRevision[branch[SHA1,name]]]")
+	
+	err = jenkins.get(fmt.Sprintf("/job/%s/%d", job.Name, number), params, &build)
 	return
 }
 
