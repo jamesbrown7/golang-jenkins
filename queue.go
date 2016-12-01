@@ -23,7 +23,7 @@ type Action struct {
 	Causes               []Cause               `json:"causes"`
 	ParameterDefinitions []ParameterDefinition `json:"parameterDefinitions"`
 	Parameters           []Parameter           `json:"parameters"`
-	LastBuiltRevision    Revision              `json:"lastBuiltRevision`
+	LastBuiltRevision    Revision              `json:"lastBuiltRevision"`
 	RemoteUrls           []string              `json:"remoteUrls"`
 }
 
