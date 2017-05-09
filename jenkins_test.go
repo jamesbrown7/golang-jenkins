@@ -11,7 +11,7 @@ func NewJenkinsWithTestData() *Jenkins {
 	return NewJenkins(&auth, "http://example.com")
 }
 
-func Test(t *testing.T) {
+func DoNotTest(t *testing.T) {
 	jenkins := NewJenkinsWithTestData()
 	jobs, err := jenkins.GetJobs()
 
@@ -52,7 +52,7 @@ func TestAddJobToView(t *testing.T) {
 	}
 }
 
-func TestCreateView(t *testing.T) {
+func DoNotTestCreateView(t *testing.T) {
 	jenkins := NewJenkinsWithTestData()
 
 	newViewName := fmt.Sprintf("test-view-%d", time.Now().UnixNano())
@@ -63,7 +63,7 @@ func TestCreateView(t *testing.T) {
 	}
 }
 
-func TestCreateJobItem(t *testing.T) {
+func DoNotTestCreateJobItem(t *testing.T) {
 	jenkins := NewJenkinsWithTestData()
 	scm := Scm{
 		ScmContent: ScmSvn{
